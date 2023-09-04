@@ -1,24 +1,25 @@
-import React from 'react';
-import styled from 'styled-components/native';
-import {Colors} from '../constant/colors';
-import FormRegistration from '../components/FormRegistration';
 import {useRoute} from '@react-navigation/native';
+import React from 'react';
+import {styled} from 'styled-components/native';
+import {Colors} from '../constant/colors';
+import FormLogin from '../components/FormLogin';
 
-const Registration = () => {
+const Login = () => {
   const {params} = useRoute<any>();
   const isDarkMode = params.isDarkMode;
 
   return (
     <Root isDarkMode={isDarkMode}>
-      <Title isDarkMode={isDarkMode}>Join us</Title>
+      <Title isDarkMode={isDarkMode}>Log in</Title>
       <SubTitle isDarkMode={isDarkMode}>
         You will be able to fully communicate
       </SubTitle>
-      <FormRegistration isDarkMode={isDarkMode} />
+      <FormLogin isDarkMode={isDarkMode} />
     </Root>
   );
 };
-export default Registration;
+
+export default Login;
 
 const Root = styled.View<{isDarkMode: boolean}>`
   height: 100%;

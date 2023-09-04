@@ -3,7 +3,8 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Registration from './Registration';
 import {NavigationContainer} from '@react-navigation/native';
 import {ThemeType} from '../types';
-import FormLogin from '../components/FormLogin';
+import Login from './Login';
+import SuccessRegistration from './SuccessRegistration';
 
 const Stack: any = createNativeStackNavigator();
 
@@ -18,7 +19,12 @@ export const Navigation = ({isDarkMode}: ThemeType) => {
         />
         <Stack.Screen
           name="Login"
-          component={FormLogin}
+          component={Login}
+          initialParams={{isDarkMode: isDarkMode}}
+        />
+        <Stack.Screen
+          name="SuccessRegistration"
+          component={SuccessRegistration}
           initialParams={{isDarkMode: isDarkMode}}
         />
       </Stack.Navigator>
