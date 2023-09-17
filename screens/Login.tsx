@@ -1,13 +1,10 @@
-import {useRoute} from '@react-navigation/native';
 import React from 'react';
 import {styled} from 'styled-components/native';
 import {Colors} from '../constant/colors';
 import FormLogin from '../components/FormLogin';
+import {ThemeType} from '../types';
 
-const Login = () => {
-  const {params} = useRoute<any>();
-  const isDarkMode = params.isDarkMode;
-
+const Login = ({isDarkMode}: ThemeType) => {
   return (
     <Root isDarkMode={isDarkMode}>
       <Title isDarkMode={isDarkMode}>Log in</Title>

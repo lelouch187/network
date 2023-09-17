@@ -21,5 +21,8 @@ export const Colors = {
   Dark_primary_default: '#91C521',
   Dark_primary_pressed: '#7AA818',
 
+  Green_dark: '#B8DE64',
+  Green_light: '#87B71F',
+
   Error: '#C2534C',
 };

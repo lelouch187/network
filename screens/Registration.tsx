@@ -2,12 +2,9 @@ import React from 'react';
 import styled from 'styled-components/native';
 import {Colors} from '../constant/colors';
 import FormRegistration from '../components/FormRegistration';
-import {useRoute} from '@react-navigation/native';
+import {ThemeType} from '../types';
 
-const Registration = () => {
-  const {params} = useRoute<any>();
-  const isDarkMode = params.isDarkMode;
-
+const Registration = ({isDarkMode}: ThemeType) => {
   return (
     <Root isDarkMode={isDarkMode}>
       <Title isDarkMode={isDarkMode}>Join us</Title>

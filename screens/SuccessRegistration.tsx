@@ -1,18 +1,19 @@
 import React from 'react';
 import {styled} from 'styled-components/native';
 import {Colors} from '../constant/colors';
-import {useRoute} from '@react-navigation/native';
+import {useNavigation} from '@react-navigation/native';
 import {Image} from 'react-native';
+import {ThemeType} from '../types';
 
-const SuccessRegistration = () => {
-  const {params} = useRoute<any>();
-  const isDarkMode = params.isDarkMode;
+const SuccessRegistration = ({isDarkMode}: ThemeType) => {
+  const navigation = useNavigation<any>();
+
   return (
     <Root isDarkMode={isDarkMode}>
       {isDarkMode ? (
-        <Image source={require('../assets/images/Congrats-dark.png')} />
+        <Image source={require('../assets/images/congrats-dark.png')} />
       ) : (
-        <Image source={require('../assets/images/Congrats-light.png')} />
+        <Image source={require('../assets/images/congrats-light.png')} />
       )}
 
       <TextInfo isDarkMode={isDarkMode}>
@@ -20,7 +21,9 @@ const SuccessRegistration = () => {
         You have been registered
       </TextInfo>
       <ButtonWrapper isDarkMode={isDarkMode}>
-        <MyButton isDarkMode={isDarkMode} onPress={() => {}}>
+        <MyButton
+          isDarkMode={isDarkMode}
+          onPress={() => navigation.navigate('Main')}>
           Continue
         </MyButton>
       </ButtonWrapper>

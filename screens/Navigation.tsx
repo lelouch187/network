@@ -2,30 +2,46 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Registration from './Registration';
 import {NavigationContainer} from '@react-navigation/native';
-import {ThemeType} from '../types';
 import Login from './Login';
 import SuccessRegistration from './SuccessRegistration';
+import Main from './Main';
+import Profile from './Profile';
 
 const Stack: any = createNativeStackNavigator();
 
-export const Navigation = ({isDarkMode}: ThemeType) => {
+type NavigationPropsType = {
+  isDarkMode: boolean;
+  setIsDarkMode: any;
+};
+
+export const Navigation = ({
+  isDarkMode,
+  setIsDarkMode,
+}: NavigationPropsType) => {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen
+          name="Profile"
+          children={() => <Profile isDarkMode={isDarkMode} />}
+        />
+        <Stack.Screen
+          name="Main"
+          children={() => (
+            <Main isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
+          )}
+        />
+        <Stack.Screen
           name="Registration"
-          component={Registration}
-          initialParams={{isDarkMode: isDarkMode}}
+          children={() => <Registration isDarkMode={isDarkMode} />}
         />
         <Stack.Screen
           name="Login"
-          component={Login}
-          initialParams={{isDarkMode: isDarkMode}}
+          children={() => <Login isDarkMode={isDarkMode} />}
         />
         <Stack.Screen
           name="SuccessRegistration"
-          component={SuccessRegistration}
-          initialParams={{isDarkMode: isDarkMode}}
+          children={() => <SuccessRegistration isDarkMode={isDarkMode} />}
         />
       </Stack.Navigator>
     </NavigationContainer>

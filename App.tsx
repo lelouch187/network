@@ -5,16 +5,17 @@
  * @format
  */
 
-import React from 'react';
+import React, {useState} from 'react';
 import {useColorScheme} from 'react-native';
 import {Navigation} from './screens/Navigation';
 
 function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const DarkMode = useColorScheme() === 'dark';
+  const [isDarkMode, setIsDarkMode] = useState(DarkMode);
 
   return (
     <>
-      <Navigation isDarkMode={isDarkMode} />
+      <Navigation setIsDarkMode={setIsDarkMode} isDarkMode={isDarkMode} />
     </>
   );
 }
