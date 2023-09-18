@@ -16,6 +16,7 @@ const ProfileHeader = ({isDarkMode}: ThemeType) => {
 export default ProfileHeader;
 
 const Root = styled.View<{isDarkMode: boolean}>`
+  position: fixed;
   display: flex;
   flex-direction: row;
   justify-content: space-between;

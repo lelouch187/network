@@ -3,26 +3,30 @@ import {ThemeType} from '../types';
 import {styled} from 'styled-components/native';
 import ProfileHeader from '../components/profileScreen/ProfileHeader';
 import {Colors} from '../constant/colors';
-import {Image} from 'react-native';
+import {Image, ScrollView} from 'react-native';
+import ProfileForm from '../components/profileScreen/ProfileForm';
 
 const Profile = ({isDarkMode}: ThemeType) => {
   return (
     <Root isDarkMode={isDarkMode}>
       <ProfileHeader isDarkMode={isDarkMode} />
-      <PhotoWrapper>
-        {isDarkMode ? (
-          <Image source={require('../assets/images/dark-profile.png')} />
-        ) : (
-          <Image source={require('../assets/images/light-profile.png')} />
-        )}
-        <BtnPhotoWrapper>
+      <ScrollView>
+        <PhotoWrapper>
           {isDarkMode ? (
-            <Image source={require('../assets/images/dark-btn-photo.png')} />
+            <Image source={require('../assets/images/dark-profile.png')} />
           ) : (
-            <Image source={require('../assets/images/light-btn-photo.png')} />
+            <Image source={require('../assets/images/light-profile.png')} />
           )}
-        </BtnPhotoWrapper>
-      </PhotoWrapper>
+          <BtnPhotoWrapper>
+            {isDarkMode ? (
+              <Image source={require('../assets/images/dark-btn-photo.png')} />
+            ) : (
+              <Image source={require('../assets/images/light-btn-photo.png')} />
+            )}
+          </BtnPhotoWrapper>
+        </PhotoWrapper>
+        <ProfileForm isDarkMode={isDarkMode} />
+      </ScrollView>
     </Root>
   );
 };
