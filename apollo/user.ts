@@ -1,10 +1,23 @@
 import {gql} from '@apollo/client';
 
-// export const USER_ME = gql`
-//     query userMe {
-
-//     }
-// `;
+export const USER_ME = gql`
+  query userMe {
+    userMe {
+      birthDate
+      country
+      createdAt
+      deletedAt
+      email
+      firstName
+      gender
+      id
+      lastName
+      middleName
+      phone
+      updatedAt
+    }
+  }
+`;
 
 export const SIGN_UP = gql`
   mutation userSignUp(

@@ -36,3 +36,7 @@ type UserModel = {
   phone: String;
   updatedAt: String;
 };
+
+export type UserMeResponse = {
+  userMe: UserModel;
+};
