@@ -1,13 +1,19 @@
 import React, {useState} from 'react';
-import {Image, Text} from 'react-native';
+import {ActivityIndicator, Image, Text} from 'react-native';
 import {styled} from 'styled-components/native';
 import {Colors} from '../constant/colors';
 import {useNavigation} from '@react-navigation/native';
 import {Controller, useForm} from 'react-hook-form';
 import {EMAILVALIDATION} from '../constant/variables';
-import {ThemeType} from '../types';
+import {SignInRequest, SignInResponse, ThemeType} from '../types';
+import {useMutation} from '@apollo/client';
+import {SIGN_IN} from '../apollo/user';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const FormLogin = ({isDarkMode}: ThemeType) => {
+  const [userSignIn, {data: result, loading, error: err}] =
+    useMutation<SignInResponse>(SIGN_IN);
+
   const [visibleInput, setVisibleInput] = useState({
     password: true,
   });
@@ -24,7 +30,18 @@ const FormLogin = ({isDarkMode}: ThemeType) => {
       password: '',
     },
   });
-  const onSubmit = (data: any) => console.log(data);
+  const onSubmit = async (data: SignInRequest) => {
+    userSignIn({
+      variables: data,
+    }).then(async () => {
+      if (result) {
+        await AsyncStorage.setItem('token', result.userSignIn.token as any);
+      }
+      if (!err && !result?.userSignIn.problem && !undefined) {
+        navigation.navigate('Main');
+      }
+    });
+  };
 
   return (
     <Root>
@@ -101,9 +118,7 @@ const FormLogin = ({isDarkMode}: ThemeType) => {
         </Text>
       )}
       <TextWrapper>
-        <TextInfo isDarkMode={isDarkMode}>
-          Already have an account?{'\t'}
-        </TextInfo>
+        <TextInfo isDarkMode={isDarkMode}>No account?{'\t'}</TextInfo>
         <TextLink
           isDarkMode={isDarkMode}
           onPress={() => navigation.navigate('Registration')}>
@@ -115,9 +130,15 @@ const FormLogin = ({isDarkMode}: ThemeType) => {
           isDarkMode={isDarkMode}
           disabled={!isDirty || !isValid}
           onPress={handleSubmit(onSubmit)}>
-          Continue
+          {loading ? <ActivityIndicator /> : 'Continue'}
         </MyButton>
       </ButtonWrapper>
+      {result?.userSignIn.problem && (
+        <Text style={{color: Colors.Error}}>
+          {result?.userSignIn.problem.message}
+        </Text>
+      )}
+      {err && <Text style={{color: Colors.Error}}>{err.message}</Text>}
     </Root>
   );
 };

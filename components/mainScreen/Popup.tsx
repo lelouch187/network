@@ -6,6 +6,8 @@ import User from '../UI/icons/User';
 import Exit from '../UI/icons/Exit';
 import Moon from '../UI/icons/Moon';
 import Sun from '../UI/icons/Sun';
+import {useNavigation} from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type PopupPropsType = {
   visiblePopup: boolean;
@@ -20,6 +22,19 @@ const Popup = ({
   visiblePopup,
   setVisiblePopup,
 }: PopupPropsType) => {
+  const navigation = useNavigation<any>();
+
+  const onProfile = () => {
+    setVisiblePopup(false);
+    navigation.navigate('Profile');
+  };
+
+  const logout = async () => {
+    setVisiblePopup(false);
+    await AsyncStorage.removeItem('token');
+    navigation.navigate('Login');
+  };
+
   return (
     <Root
       onTouchStart={e => e.stopPropagation()}
@@ -33,11 +48,11 @@ const Popup = ({
       </ImageWrapper>
       <Title isDarkMode={isDarkMode}>Hello John!</Title>
       <LinksWrapper>
-        <Item>
+        <Item onTouchStart={onProfile}>
           <User color={isDarkMode ? Colors.Dark_100 : Colors.Light_700} />
           <TextLink isDarkMode={isDarkMode}>Profile</TextLink>
         </Item>
-        <Item>
+        <Item onTouchStart={logout}>
           <Exit color={isDarkMode ? Colors.Dark_100 : Colors.Light_700} />
           <TextLink isDarkMode={isDarkMode}>Exit</TextLink>
         </Item>

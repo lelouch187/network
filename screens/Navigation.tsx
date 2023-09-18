@@ -22,6 +22,10 @@ export const Navigation = ({
     <NavigationContainer>
       <Stack.Navigator screenOptions={{headerShown: false}}>
         <Stack.Screen
+          name="Registration"
+          children={() => <Registration isDarkMode={isDarkMode} />}
+        />
+        <Stack.Screen
           name="Profile"
           children={() => <Profile isDarkMode={isDarkMode} />}
         />
@@ -30,10 +34,6 @@ export const Navigation = ({
           children={() => (
             <Main isDarkMode={isDarkMode} setIsDarkMode={setIsDarkMode} />
           )}
-        />
-        <Stack.Screen
-          name="Registration"
-          children={() => <Registration isDarkMode={isDarkMode} />}
         />
         <Stack.Screen
           name="Login"

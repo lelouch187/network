@@ -1,16 +1,21 @@
 import React, {useState} from 'react';
 import {Controller, useForm} from 'react-hook-form';
-import {Image, Text} from 'react-native';
+import {ActivityIndicator, Image, Text} from 'react-native';
 import styled from 'styled-components/native';
 import {Colors} from '../constant/colors';
 import {useNavigation} from '@react-navigation/native';
-import {ThemeType} from '../types';
+import {SignUpRequest, SignUpResponse, ThemeType} from '../types';
 import {EMAILVALIDATION} from '../constant/variables';
+import {useMutation} from '@apollo/client';
+import {SIGN_UP} from '../apollo/user';
 
 const FormRegistration = ({isDarkMode}: ThemeType) => {
+  const [userSignUp, {data: result, loading, error: err}] =
+    useMutation<SignUpResponse>(SIGN_UP);
+
   const [visibleInput, setVisibleInput] = useState({
     password: true,
-    confirmPassword: true,
+    passwordConfirm: true,
   });
 
   const navigation = useNavigation<any>();
@@ -25,10 +30,18 @@ const FormRegistration = ({isDarkMode}: ThemeType) => {
     defaultValues: {
       email: '',
       password: '',
-      confirmPassword: '',
+      passwordConfirm: '',
     },
   });
-  const onSubmit = (data: any) => console.log(data);
+  const onSubmit = (data: SignUpRequest) => {
+    userSignUp({
+      variables: data,
+    }).then(() => {
+      if (!err && !result?.userSignUp.problem && !undefined) {
+        navigation.navigate('Login');
+      }
+    });
+  };
 
   return (
     <Root>
@@ -112,13 +125,12 @@ const FormRegistration = ({isDarkMode}: ThemeType) => {
           }}
           render={({field: {onChange, onBlur, value}}) => (
             <>
-              <InputTitle errors={errors.confirmPassword || ''}>
+              <InputTitle errors={errors.passwordConfirm || ''}>
                 Password
               </InputTitle>
               <MyInput
-                onPressIn={() => trigger()}
-                errors={errors.confirmPassword || ''}
-                secureTextEntry={visibleInput.confirmPassword}
+                errors={errors.passwordConfirm || ''}
+                secureTextEntry={visibleInput.passwordConfirm}
                 placeholderTextColor={Colors.Dark_400}
                 isDarkMode={isDarkMode}
                 placeholder="Confirm your password"
@@ -128,23 +140,23 @@ const FormRegistration = ({isDarkMode}: ThemeType) => {
               />
             </>
           )}
-          name="confirmPassword"
+          name="passwordConfirm"
         />
         <IconWrapper
           onTouchStart={() =>
             setVisibleInput({
               ...visibleInput,
-              confirmPassword: !visibleInput.confirmPassword,
+              passwordConfirm: !visibleInput.passwordConfirm,
             })
           }>
-          {errors.confirmPassword ? (
+          {errors.passwordConfirm ? (
             <Image source={require('../assets/images/eue-error.png')} />
           ) : (
             <Image source={require('../assets/images/eue.png')} />
           )}
         </IconWrapper>
       </InputWrapper>
-      {errors.confirmPassword && (
+      {errors.passwordConfirm && (
         <Text style={{color: Colors.Error}}>Both passwords must match</Text>
       )}
       <TextWrapper>
@@ -164,9 +176,15 @@ const FormRegistration = ({isDarkMode}: ThemeType) => {
           isDarkMode={isDarkMode}
           disabled={!isDirty || !isValid}
           onPress={handleSubmit(onSubmit)}>
-          Continue
+          {loading ? <ActivityIndicator /> : 'Continue'}
         </MyButton>
       </ButtonWrapper>
+      {result?.userSignUp.problem && (
+        <Text style={{color: Colors.Error}}>
+          {result?.userSignUp.problem.message}
+        </Text>
+      )}
+      {err && <Text style={{color: Colors.Error}}>{err.message}</Text>}
     </Root>
   );
 };
