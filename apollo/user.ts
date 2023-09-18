@@ -1,9 +1,10 @@
 import {gql} from '@apollo/client';
 
-// export const USER_ME=gql`
+// export const USER_ME = gql`
 //     query userMe {
+
 //     }
-// `
+// `;
 
 export const SIGN_UP = gql`
   mutation userSignUp(
