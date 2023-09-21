@@ -6,6 +6,8 @@ import Login from './Login';
 import SuccessRegistration from './SuccessRegistration';
 import Main from './Main';
 import Profile from './Profile';
+import FullPost from './FullPost';
+import CreatePost from './CreatePost';
 
 const Stack: any = createNativeStackNavigator();
 
@@ -42,6 +44,14 @@ export const Navigation = ({
         <Stack.Screen
           name="SuccessRegistration"
           children={() => <SuccessRegistration isDarkMode={isDarkMode} />}
+        />
+        <Stack.Screen
+          name="CreatePost"
+          children={() => <CreatePost isDarkMode={isDarkMode} />}
+        />
+        <Stack.Screen
+          name="FullPost"
+          children={() => <FullPost isDarkMode={isDarkMode} />}
         />
       </Stack.Navigator>
     </NavigationContainer>

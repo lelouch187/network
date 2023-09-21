@@ -40,3 +40,40 @@ type UserModel = {
 export type UserMeResponse = {
   userMe: UserModel;
 };
+type EmailAlreadyUsedProblem = {
+  message: String;
+};
+type PhoneAlreadyUsedProblem = {
+  message: String;
+};
+
+type EditProfileProblemUnion =
+  | EmailAlreadyUsedProblem
+  | PhoneAlreadyUsedProblem;
+
+export type EditProfileResponse = {
+  userEditProfile: {problem: EditProfileProblemUnion; user: UserModel};
+};
+type PageAfterCursorInfo = {
+  afterCursor: String;
+  count: Number;
+  perPage: Number;
+};
+
+export type PostModel = {
+  author: UserModel;
+  authorId: String;
+  createdAt: String;
+  deletedAt: String;
+  description: String;
+  id: String;
+  isLiked: Boolean;
+  likesCount: Number;
+  mediaUrl: String;
+  title: String;
+  updatedAt: String;
+};
+
+export type FindPostsPaginationResponse = {
+  posts: {data: [PostModel]; pageInfo: PageAfterCursorInfo};
+};

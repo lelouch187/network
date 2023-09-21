@@ -38,7 +38,7 @@ const FormRegistration = ({isDarkMode}: ThemeType) => {
       variables: data,
     }).then(() => {
       if (!err && !result?.userSignUp.problem && !undefined) {
-        navigation.navigate('Login');
+        navigation.navigate('SuccessRegistration');
       }
     });
   };

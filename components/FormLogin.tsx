@@ -30,15 +30,19 @@ const FormLogin = ({isDarkMode}: ThemeType) => {
       password: '',
     },
   });
+
   const onSubmit = async (data: SignInRequest) => {
+    await AsyncStorage.removeItem('token');
     userSignIn({
       variables: data,
     }).then(async () => {
-      if (result) {
-        await AsyncStorage.setItem('token', result.userSignIn.token as any);
-      }
-      if (!err && !result?.userSignIn.problem && !undefined) {
-        navigation.navigate('Main');
+      if (result?.userSignIn.token) {
+        await AsyncStorage.setItem(
+          'token',
+          result?.userSignIn.token as any,
+        ).then(() => {
+          navigation.navigate('Main');
+        });
       }
     });
   };

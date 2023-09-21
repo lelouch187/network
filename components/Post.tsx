@@ -1,20 +1,31 @@
 import React from 'react';
 import {styled} from 'styled-components/native';
-import {ThemeType} from '../types';
-import {Image} from 'react-native';
+import {PostModel} from '../types';
+import {Image, View} from 'react-native';
 import {Colors} from '../constant/colors';
+import Like from './UI/icons/Like';
+import {useMutation} from '@apollo/client';
+import {POST_LIKE, POST_UNLIKE} from '../apollo/posts';
 
-const Post = ({isDarkMode}: ThemeType) => {
+type PostPropsType = {
+  post: PostModel;
+  isDarkMode: boolean;
+};
+
+const Post = ({isDarkMode, post}: PostPropsType) => {
+  const [likePost] = useMutation(POST_LIKE);
+  const [unLikePost] = useMutation(POST_UNLIKE);
+
   return (
     <Root isDarkMode={isDarkMode}>
       <HeaderPost>
-        <HeaderText isDarkMode={isDarkMode}>Apple love</HeaderText>
-        <PostDate>11.09.22</PostDate>
+        <HeaderText isDarkMode={isDarkMode}>{post.title}</HeaderText>
+        <PostDate>{post.createdAt.split('T')[0]}</PostDate>
       </HeaderPost>
       <ImageWrapper>
         <Image
-          style={{width: '100%'}}
-          source={require('../assets/images/post-image.png')}
+          style={{width: '100%', height: '100%'}}
+          source={{uri: post.mediaUrl}}
         />
       </ImageWrapper>
       <PostBottom>
@@ -22,18 +33,35 @@ const Post = ({isDarkMode}: ThemeType) => {
           <UserImageWrapper>
             <Image
               style={{width: '100%', height: '100%'}}
-              source={require('../assets/images/post-image.png')}
+              source={
+                !post.author.avatarUrl
+                  ? isDarkMode
+                    ? require('../assets/images/dark-profile.png')
+                    : require('../assets/images/light-profile.png')
+                  : {uri: post.author.avatarUrl}
+              }
             />
           </UserImageWrapper>
-          <UserName>Hannah K.</UserName>
+          <UserName>{post.author.firstName}</UserName>
         </UserInfo>
         <Social>
-          {isDarkMode ? (
-            <Image source={require('../assets/images/heart-dark.png')} />
-          ) : (
-            <Image source={require('../assets/images/heart-light.png')} />
-          )}
-          <LikesCount>137</LikesCount>
+          <View
+            onTouchStart={
+              post.isLiked
+                ? () => unLikePost({variables: {id: post.id}})
+                : () => likePost({variables: {id: post.id}})
+            }>
+            <Like
+              color={
+                post.isLiked
+                  ? Colors.Error
+                  : isDarkMode
+                  ? Colors.Dark_200
+                  : Colors.Light_700
+              }
+            />
+          </View>
+          <LikesCount>{post.likesCount.toString()}</LikesCount>
           {isDarkMode ? (
             <Image source={require('../assets/images/share-dark.png')} />
           ) : (
@@ -72,6 +100,8 @@ const ImageWrapper = styled.View`
   border-radius: 16px;
   overflow: hidden;
   margin-bottom: 20px;
+  height: 226px;
+  width: 100%;
 `;
 const PostBottom = styled.View`
   display: flex;

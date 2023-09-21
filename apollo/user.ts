@@ -80,3 +80,56 @@ export const SIGN_IN = gql`
     }
   }
 `;
+
+export const USER_EDIT_PROFILE = gql`
+  mutation userEditProfile(
+    $avatarUrl: String
+    $birthDate: String
+    $country: String
+    $email: String!
+    $firstName: String
+    $gender: GenderType
+    $lastName: String
+    $middleName: String
+    $phone: String
+  ) {
+    userEditProfile(
+      input: {
+        avatarUrl: $avatarUrl
+        birthDate: $birthDate
+        country: $country
+        email: $email
+        firstName: $firstName
+        gender: $gender
+        lastName: $lastName
+        middleName: $middleName
+        phone: $phone
+      }
+    ) {
+      problem {
+        __typename
+        ... on EmailAlreadyUsedProblem {
+          message
+        }
+        ... on PhoneAlreadyUsedProblem {
+          message
+        }
+      }
+      user {
+        avatarUrl
+        birthDate
+        country
+        createdAt
+        deletedAt
+        email
+        firstName
+        gender
+        id
+        lastName
+        middleName
+        phone
+        updatedAt
+      }
+    }
+  }
+`;

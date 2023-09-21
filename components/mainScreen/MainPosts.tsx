@@ -1,32 +1,56 @@
-import React, {useState} from 'react';
-import {ThemeType} from '../../types';
+import React, {useRef, useState} from 'react';
+import {FindPostsPaginationResponse, ThemeType} from '../../types';
 import {styled} from 'styled-components/native';
 import {Colors} from '../../constant/colors';
 import {FlatList} from 'react-native';
 import Post from '../Post';
+import {useQuery} from '@apollo/client';
+import {POSTS} from '../../apollo/posts';
 
 const MainPosts = ({isDarkMode}: ThemeType) => {
   const [activeSwitch, setActiveSwitch] = useState(0);
+  const {data, refetch} = useQuery<FindPostsPaginationResponse>(POSTS, {
+    variables: {limit: 20, type: activeSwitch === 0 ? 'NEW' : 'TOP'},
+  });
+
+  const flatListRef = useRef<any>();
 
   return (
     <Root>
       <SwitchToogle>
         <ToogleText
-          onPress={() => setActiveSwitch(0)}
+          onPress={() => {
+            setActiveSwitch(0);
+            refetch({limit: 20, type: activeSwitch === 0 ? 'NEW' : 'TOP'});
+          }}
           isDarkMode={isDarkMode}
           active={activeSwitch === 0 ? true : false}>
           New
         </ToogleText>
         <ToogleText
-          onPress={() => setActiveSwitch(1)}
+          onPress={() => {
+            setActiveSwitch(1);
+            refetch({limit: 20, type: activeSwitch === 0 ? 'NEW' : 'TOP'});
+          }}
           isDarkMode={isDarkMode}
           active={activeSwitch === 1 ? true : false}>
           Top
         </ToogleText>
       </SwitchToogle>
       <FlatList
-        data={[1, 2, 3, 4]}
-        renderItem={({item}) => <Post isDarkMode={isDarkMode} />}
+        ref={flatListRef}
+        onEndReached={() => {
+          refetch({
+            limit: 20,
+            type: activeSwitch === 0 ? 'NEW' : 'TOP',
+            afterCursor: data?.posts.pageInfo.afterCursor,
+          });
+          flatListRef.current.scrollToOffset({animated: false, offset: 0});
+        }}
+        data={data?.posts.data}
+        renderItem={({item}: any) => (
+          <Post post={item} isDarkMode={isDarkMode} />
+        )}
       />
     </Root>
   );

@@ -23,7 +23,7 @@ const SuccessRegistration = ({isDarkMode}: ThemeType) => {
       <ButtonWrapper isDarkMode={isDarkMode}>
         <MyButton
           isDarkMode={isDarkMode}
-          onPress={() => navigation.navigate('Main')}>
+          onPress={() => navigation.navigate('Login')}>
           Continue
         </MyButton>
       </ButtonWrapper>

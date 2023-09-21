@@ -2,6 +2,9 @@ import React from 'react';
 import {Image} from 'react-native';
 import {styled} from 'styled-components/native';
 import {Colors} from '../../constant/colors';
+import {useQuery} from '@apollo/client';
+import {UserMeResponse} from '../../types';
+import {USER_ME} from '../../apollo/user';
 
 type MainHeaderPropsType = {
   isDarkMode: boolean;
@@ -9,15 +12,26 @@ type MainHeaderPropsType = {
 };
 
 const MainHeader = ({isDarkMode, setVisiblePopup}: MainHeaderPropsType) => {
+  const {data} = useQuery<UserMeResponse>(USER_ME);
+
   return (
     <Root isDarkMode={isDarkMode}>
-      <Title isDarkMode={isDarkMode}>Hello John!</Title>
+      <Title isDarkMode={isDarkMode}>Hello {data?.userMe.firstName}!</Title>
       <ImageWrapper
         onTouchStart={e => {
           e.stopPropagation();
           setVisiblePopup((prev: boolean) => !prev);
         }}>
-        <Image source={require('../../assets/images/post-image.png')} />
+        <Image
+          style={{width: '100%', height: '100%'}}
+          source={
+            data?.userMe.avatarUrl
+              ? {uri: data.userMe.avatarUrl}
+              : isDarkMode
+              ? require('../../assets/images/dark-profile.png')
+              : require('../../assets/images/light-profile.png')
+          }
+        />
       </ImageWrapper>
     </Root>
   );

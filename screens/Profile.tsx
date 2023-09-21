@@ -1,21 +1,33 @@
 import React, {useState} from 'react';
-import {ThemeType, UserMeResponse} from '../types';
+import {EditProfileResponse, ThemeType, UserMeResponse} from '../types';
 import {styled} from 'styled-components/native';
 import {Colors} from '../constant/colors';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Image, Platform, ScrollView, Text, View} from 'react-native';
-import {useQuery} from '@apollo/client';
-import {USER_ME} from '../apollo/user';
+import {useMutation, useQuery} from '@apollo/client';
+import {USER_EDIT_PROFILE, USER_ME} from '../apollo/user';
 import ArrowBack from '../components/UI/icons/ArrowBack';
 import {Controller, useForm} from 'react-hook-form';
-import RadioBtn from '../components/UI/icons/RadioBtn';
 import {EMAILVALIDATION, PHONEVALIDATION} from '../constant/variables';
+import {useNavigation} from '@react-navigation/native';
+import RadioBtn from '../components/UI/icons/RadioBtn';
+
+type ProfileInputTipe = {
+  firstName: String;
+  lastName: String;
+  middleName: String;
+  email: String;
+  phone: String;
+  country: String;
+};
 
 const Profile = ({isDarkMode}: ThemeType) => {
-  const {loading, error, data} = useQuery<UserMeResponse>(USER_ME);
-  console.log(data);
+  const {data} = useQuery<UserMeResponse>(USER_ME);
+  const [userEditProfile, {data: result, error: err}] =
+    useMutation<EditProfileResponse>(USER_EDIT_PROFILE);
 
-  const [date, setDate] = useState<any>(null);
+  const navigation = useNavigation<any>();
+  const [date, setDate] = useState<any>(new Date());
   const [show, setShow] = useState(false);
 
   const onChanged = (event: any, selectedDate: any) => {
@@ -25,6 +37,7 @@ const Profile = ({isDarkMode}: ThemeType) => {
   };
 
   const [gender, setGender] = useState(data?.userMe.gender || 'MALE');
+
   const {
     control,
     handleSubmit,
@@ -32,24 +45,50 @@ const Profile = ({isDarkMode}: ThemeType) => {
     formState: {errors},
   } = useForm({
     defaultValues: {
-      firstName: '',
-      lastName: '',
-      surName: '',
-      radio: '',
-      email: '',
-      phone: '',
-      country: '',
+      firstName: data?.userMe.firstName || '',
+      lastName: data?.userMe.lastName || '',
+      middleName: data?.userMe.middleName || '',
+      email: data?.userMe.email || '',
+      phone: data?.userMe.phone || '',
+      country: data?.userMe.country || '',
     },
   });
 
-  const onSubmit = (userInfo: any) => console.log(userInfo);
+  const onSubmit = async (userInfo: ProfileInputTipe) => {
+    await userEditProfile({
+      variables: {
+        email: userInfo.email,
+        firstName: userInfo.firstName || data?.userMe.firstName,
+        gender: gender,
+        lastName: userInfo.lastName || data?.userMe.lastName,
+        middleName: userInfo.middleName || data?.userMe.middleName,
+        phone: userInfo.phone || data?.userMe.phone,
+        country: userInfo.country || data?.userMe.country,
+        birthDate: `${date.getFullYear()}-${
+          date.getMonth().length > 2
+            ? date.getMonth() - 1
+            : '0' + (date.getMonth() + 1)
+        }-${
+          date.getDay().length > 2
+            ? date.getDay() - 1
+            : '0' + (date.getDay() - 1)
+        }`,
+      },
+    });
+    console.log('res', result);
+    console.log('err', err);
+  };
 
   return (
     <Root isDarkMode={isDarkMode}>
       <Header isDarkMode={isDarkMode}>
-        <ArrowBack color={isDarkMode ? Colors.Dark_100 : Colors.Light_100} />
+        <View onTouchStart={() => navigation.goBack()}>
+          <ArrowBack color={isDarkMode ? Colors.Dark_100 : Colors.Light_100} />
+        </View>
         <HeaderTitle isDarkMode={isDarkMode}>Profile</HeaderTitle>
-        <HeaderButton isDarkMode={isDarkMode}>Done</HeaderButton>
+        <HeaderButton onPress={handleSubmit(onSubmit)} isDarkMode={isDarkMode}>
+          Done
+        </HeaderButton>
       </Header>
       <ScrollView>
         <PhotoWrapper>
@@ -88,7 +127,6 @@ const Profile = ({isDarkMode}: ThemeType) => {
           <Title isDarkMode={isDarkMode}>Personal info</Title>
           <Controller
             control={control}
-            rules={{minLength: 3}}
             render={({field: {onChange, onBlur, value}}) => (
               <>
                 <InputTitle errors={errors.firstName || ''}>
@@ -102,7 +140,7 @@ const Profile = ({isDarkMode}: ThemeType) => {
                   placeholder="Enter your first name"
                   onBlur={onBlur}
                   onChangeText={onChange}
-                  value={data?.userMe.firstName || value}
+                  value={value}
                 />
               </>
             )}
@@ -113,7 +151,6 @@ const Profile = ({isDarkMode}: ThemeType) => {
           )}
           <Controller
             control={control}
-            rules={{minLength: 3}}
             render={({field: {onChange, onBlur, value}}) => (
               <>
                 <InputTitle errors={errors.lastName || ''}>
@@ -127,7 +164,7 @@ const Profile = ({isDarkMode}: ThemeType) => {
                   placeholder="Enter your last name"
                   onBlur={onBlur}
                   onChangeText={onChange}
-                  value={data?.userMe.lastName || value}
+                  value={value}
                 />
               </>
             )}
@@ -138,25 +175,26 @@ const Profile = ({isDarkMode}: ThemeType) => {
           )}
           <Controller
             control={control}
-            rules={{minLength: 3}}
             render={({field: {onChange, onBlur, value}}) => (
               <>
-                <InputTitle errors={errors.surName || ''}>Surname</InputTitle>
+                <InputTitle errors={errors.middleName || ''}>
+                  middleName
+                </InputTitle>
                 <MyInput
                   onPressIn={() => trigger()}
-                  errors={errors.surName || ''}
+                  errors={errors.middleName || ''}
                   placeholderTextColor={Colors.Dark_400}
                   isDarkMode={isDarkMode}
                   placeholder="Enter your sur name"
                   onBlur={onBlur}
                   onChangeText={onChange}
-                  value={data?.userMe.middleName || value}
+                  value={value}
                 />
               </>
             )}
-            name="surName"
+            name="middleName"
           />
-          {errors.surName && (
+          {errors.middleName && (
             <Text style={{color: Colors.Error}}>name too short</Text>
           )}
           <Title isDarkMode={isDarkMode}>Gender</Title>
@@ -172,19 +210,17 @@ const Profile = ({isDarkMode}: ThemeType) => {
           <View onTouchStart={() => setShow(true)}>
             <DateTitle>B-day</DateTitle>
             <DateText isDarkMode={isDarkMode}>
-              {data?.userMe.birthDate ? (
-                data.userMe.birthDate
-              ) : (
-                <Text style={{color: `${Colors.Dark_400}`}}>
-                  Select bate of birth
-                </Text>
-              )}
+              <Text style={{color: `${Colors.Dark_400}`}}>
+                {date.toDateString() ||
+                  data?.userMe.birthDate ||
+                  'Select bate of birth'}
+              </Text>
             </DateText>
             {show && (
               <DateTimePicker
                 testID="dateTimePicker"
                 timeZoneOffsetInMinutes={0}
-                value={new Date()}
+                value={date}
                 mode="date"
                 display="default"
                 onChange={onChanged}
@@ -211,7 +247,7 @@ const Profile = ({isDarkMode}: ThemeType) => {
                   placeholder="Enter your e-mail"
                   onBlur={onBlur}
                   onChangeText={onChange}
-                  value={data?.userMe.email || value}
+                  value={value}
                 />
               </>
             )}
@@ -241,7 +277,7 @@ const Profile = ({isDarkMode}: ThemeType) => {
                   placeholder="Enter your phone number"
                   onBlur={onBlur}
                   onChangeText={onChange}
-                  value={data?.userMe.phone || value}
+                  value={value}
                 />
               </>
             )}
@@ -252,7 +288,6 @@ const Profile = ({isDarkMode}: ThemeType) => {
           )}
           <Controller
             control={control}
-            rules={{minLength: 3}}
             render={({field: {onChange, onBlur, value}}) => (
               <>
                 <InputTitle errors={errors.country || ''}>Country</InputTitle>
@@ -264,7 +299,7 @@ const Profile = ({isDarkMode}: ThemeType) => {
                   placeholder="Enter your country"
                   onBlur={onBlur}
                   onChangeText={onChange}
-                  value={data?.userMe.country || value}
+                  value={value}
                 />
               </>
             )}
