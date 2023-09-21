@@ -1,13 +1,28 @@
 import React from 'react';
-import {ThemeType} from '../types';
 import {styled} from 'styled-components/native';
 import {Colors} from '../constant/colors';
 import {Image, View} from 'react-native';
 import ArrowBack from '../components/UI/icons/ArrowBack';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import {useMutation, useQuery} from '@apollo/client';
+import {POST, POST_LIKE, POST_UNLIKE} from '../apollo/posts';
+import {PostResponse} from '../types';
+import Like from '../components/UI/icons/Like';
 
-const FullPost = ({isDarkMode}: ThemeType) => {
+type FullPostPropsType = {
+  isDarkMode: boolean;
+};
+
+const FullPost = ({isDarkMode}: FullPostPropsType) => {
   const navigation = useNavigation();
+  const {params} = useRoute();
+
+  const {data: post} = useQuery<PostResponse>(POST, {
+    variables: {id: params?.id},
+  });
+
+  const [likePost] = useMutation(POST_LIKE);
+  const [unLikePost] = useMutation(POST_UNLIKE);
 
   return (
     <Root isDarkMode={isDarkMode}>
@@ -15,46 +30,50 @@ const FullPost = ({isDarkMode}: ThemeType) => {
         <View onTouchStart={() => navigation.goBack()}>
           <ArrowBack color={isDarkMode ? Colors.Dark_100 : Colors.Light_100} />
         </View>
-        <HeaderText isDarkMode={isDarkMode}>Apple love</HeaderText>
+        <HeaderText isDarkMode={isDarkMode}>{post?.post.title}</HeaderText>
       </HeaderPost>
-      <PostDate>11.09.22</PostDate>
+      <PostDate>{post?.post.createdAt.split('T')[0]}</PostDate>
       <ImageWrapper>
         <Image
-          style={{width: '100%'}}
-          source={require('../assets/images/post-image.png')}
+          style={{width: '100%', height: '100%'}}
+          source={{uri: post?.post.mediaUrl}}
         />
       </ImageWrapper>
-      <PostText isDarkMode={isDarkMode}>
-        The Queen of the Carnival in Rio de Janeiro and up to two princesses
-        having the duty to woo the revelry, along with the King Momo. Unlike
-        some cities, in the city of Rio de Janeiro, Queens of Carnival do not
-        see a certain school of samba. In competitions, princesses are usually
-        placed as second and third, and are correspondingly 1st and
-        2nd Princess. Some of them after the reign become queens or battery
-        bridesmaids. Incorporated into every aspect of the Rio carnival are
-        dancing and music. The most famous dance is carnival samba, a Brazilian
-        dance with African influences. The samba remains a popular dance not
-        only in carnival but in the ghettos outside of the main cities.Some
-        of them after the reign become queens or battery bridesmaids.
-        Incorporated into every aspect of the Rio
-      </PostText>
+      <PostText isDarkMode={isDarkMode}>{post?.post.description}</PostText>
       <PostBottom>
         <UserInfo>
           <UserImageWrapper>
             <Image
               style={{width: '100%', height: '100%'}}
-              source={require('../assets/images/post-image.png')}
+              source={
+                !post?.post.author.avatarUrl
+                  ? isDarkMode
+                    ? require('../assets/images/dark-profile.png')
+                    : require('../assets/images/light-profile.png')
+                  : {uri: post.post.author.avatarUrl}
+              }
             />
           </UserImageWrapper>
-          <UserName>Hannah K.</UserName>
+          <UserName>{post?.post.author.firstName}</UserName>
         </UserInfo>
         <Social>
-          {isDarkMode ? (
-            <Image source={require('../assets/images/heart-dark.png')} />
-          ) : (
-            <Image source={require('../assets/images/heart-light.png')} />
-          )}
-          <LikesCount>137</LikesCount>
+          <View
+            onTouchStart={
+              post?.post.isLiked
+                ? () => unLikePost({variables: {id: post.post.id}})
+                : () => likePost({variables: {id: post?.post.id}})
+            }>
+            <Like
+              color={
+                post?.post.isLiked
+                  ? Colors.Error
+                  : isDarkMode
+                  ? Colors.Dark_200
+                  : Colors.Light_700
+              }
+            />
+          </View>
+          <LikesCount>{post?.post.likesCount}</LikesCount>
           {isDarkMode ? (
             <Image source={require('../assets/images/share-dark.png')} />
           ) : (

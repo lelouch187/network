@@ -2,16 +2,19 @@ import React, {useRef, useState} from 'react';
 import {FindPostsPaginationResponse, ThemeType} from '../../types';
 import {styled} from 'styled-components/native';
 import {Colors} from '../../constant/colors';
-import {FlatList} from 'react-native';
+import {FlatList, View} from 'react-native';
 import Post from '../Post';
 import {useQuery} from '@apollo/client';
 import {POSTS} from '../../apollo/posts';
+import {useNavigation} from '@react-navigation/native';
 
 const MainPosts = ({isDarkMode}: ThemeType) => {
   const [activeSwitch, setActiveSwitch] = useState(0);
   const {data, refetch} = useQuery<FindPostsPaginationResponse>(POSTS, {
     variables: {limit: 20, type: activeSwitch === 0 ? 'NEW' : 'TOP'},
   });
+
+  const navigation = useNavigation<any>();
 
   const flatListRef = useRef<any>();
 
@@ -49,7 +52,10 @@ const MainPosts = ({isDarkMode}: ThemeType) => {
         }}
         data={data?.posts.data}
         renderItem={({item}: any) => (
-          <Post post={item} isDarkMode={isDarkMode} />
+          <View
+            onTouchStart={() => navigation.navigate('FullPost', {id: item.id})}>
+            <Post post={item} isDarkMode={isDarkMode} />
+          </View>
         )}
       />
     </Root>

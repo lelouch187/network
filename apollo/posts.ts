@@ -39,6 +39,38 @@ export const POSTS = gql`
   }
 `;
 
+export const POST = gql`
+  query post($id: String!) {
+    post(input: {id: $id}) {
+      author {
+        avatarUrl
+        birthDate
+        country
+        createdAt
+        deletedAt
+        email
+        firstName
+        gender
+        id
+        lastName
+        middleName
+        phone
+        updatedAt
+      }
+      authorId
+      createdAt
+      deletedAt
+      description
+      id
+      isLiked
+      likesCount
+      mediaUrl
+      title
+      updatedAt
+    }
+  }
+`;
+
 export const POST_UNLIKE = gql`
   mutation postUnlike($id: String!) {
     postUnlike(input: {id: $id}) {

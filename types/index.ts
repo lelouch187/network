@@ -77,3 +77,19 @@ export type PostModel = {
 export type FindPostsPaginationResponse = {
   posts: {data: [PostModel]; pageInfo: PageAfterCursorInfo};
 };
+
+export type PostResponse = {
+  post: {
+    author: UserModel;
+    authorId: String;
+    createdAt: String;
+    deletedAt: String;
+    description: String;
+    id: String;
+    isLiked: Boolean;
+    likesCount: Number;
+    mediaUrl: String;
+    title: String;
+    updatedAt: String;
+  };
+};
