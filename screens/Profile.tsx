@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {EditProfileResponse, ThemeType, UserMeResponse} from '../types';
 import {styled} from 'styled-components/native';
 import {Colors} from '../constant/colors';
@@ -11,6 +11,7 @@ import {Controller, useForm} from 'react-hook-form';
 import {EMAILVALIDATION, PHONEVALIDATION} from '../constant/variables';
 import {useNavigation} from '@react-navigation/native';
 import RadioBtn from '../components/UI/icons/RadioBtn';
+import {launchImageLibrary} from 'react-native-image-picker';
 
 type ProfileInputTipe = {
   firstName: String;
@@ -28,11 +29,22 @@ const Profile = ({isDarkMode}: ThemeType) => {
   const navigation = useNavigation<any>();
   const [date, setDate] = useState<any>(new Date());
   const [show, setShow] = useState(false);
+  const [selectImage, setSelectImage] = useState('');
 
   const onChanged = (event: any, selectedDate: any) => {
     const currentDate = selectedDate || date;
     setShow(Platform.OS === 'ios');
     setDate(currentDate);
+  };
+
+  const saveImg = async () => {
+    let options = {
+      storageOptions: {
+        path: 'image',
+      },
+    };
+    const result = await launchImageLibrary(options);
+    console.log(result);
   };
 
   const [gender, setGender] = useState(data?.userMe.gender || 'MALE');
@@ -112,7 +124,7 @@ const Profile = ({isDarkMode}: ThemeType) => {
               style={{width: '100%', height: '100%'}}
             />
           )}
-          <BtnPhotoWrapper>
+          <BtnPhotoWrapper onTouchStart={() => saveImg()}>
             {isDarkMode ? (
               <Image source={require('../assets/images/dark-btn-photo.png')} />
             ) : (

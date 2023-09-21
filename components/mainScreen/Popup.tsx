@@ -8,6 +8,9 @@ import Moon from '../UI/icons/Moon';
 import Sun from '../UI/icons/Sun';
 import {useNavigation} from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {USER_ME} from '../../apollo/user';
+import {UserMeResponse} from '../../types';
+import {useQuery} from '@apollo/client';
 
 type PopupPropsType = {
   visiblePopup: boolean;
@@ -23,6 +26,8 @@ const Popup = ({
   setVisiblePopup,
 }: PopupPropsType) => {
   const navigation = useNavigation<any>();
+
+  const {data} = useQuery<UserMeResponse>(USER_ME);
 
   const onProfile = () => {
     setVisiblePopup(false);
@@ -41,12 +46,31 @@ const Popup = ({
       visible={visiblePopup}
       isDarkMode={isDarkMode}>
       <ImageWrapper>
-        <Image
-          style={{width: '100%', height: '100%'}}
-          source={require('../../assets/images/header-avatar.png')}
-        />
+        {isDarkMode ? (
+          <Image
+            source={
+              data?.userMe.avatarUrl
+                ? {
+                    uri: data?.userMe.avatarUrl,
+                  }
+                : require('../../assets/images/dark-profile.png')
+            }
+            style={{width: '100%', height: '100%'}}
+          />
+        ) : (
+          <Image
+            source={
+              data?.userMe.avatarUrl
+                ? {
+                    uri: data?.userMe.avatarUrl,
+                  }
+                : require('../../assets/images/light-profile.png')
+            }
+            style={{width: '100%', height: '100%'}}
+          />
+        )}
       </ImageWrapper>
-      <Title isDarkMode={isDarkMode}>Hello John!</Title>
+      <Title isDarkMode={isDarkMode}>Hello {data?.userMe.firstName}!</Title>
       <LinksWrapper>
         <Item onTouchStart={onProfile}>
           <User color={isDarkMode ? Colors.Dark_100 : Colors.Light_700} />
