@@ -9,14 +9,25 @@ import {USER_ME} from '../../apollo/user';
 type MainHeaderPropsType = {
   isDarkMode: boolean;
   setVisiblePopup: any;
+  activeTab: number;
 };
 
-const MainHeader = ({isDarkMode, setVisiblePopup}: MainHeaderPropsType) => {
+const MainHeader = ({
+  isDarkMode,
+  setVisiblePopup,
+  activeTab,
+}: MainHeaderPropsType) => {
   const {data} = useQuery<UserMeResponse>(USER_ME);
 
   return (
     <Root isDarkMode={isDarkMode}>
-      <Title isDarkMode={isDarkMode}>Hello {data?.userMe.firstName}!</Title>
+      <Title isDarkMode={isDarkMode}>
+        {activeTab === 0
+          ? `Hello ${data?.userMe.firstName}!`
+          : activeTab === 1
+          ? 'Favorites'
+          : 'My posts'}
+      </Title>
       <ImageWrapper
         onTouchStart={e => {
           e.stopPropagation();

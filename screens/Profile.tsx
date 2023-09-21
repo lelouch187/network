@@ -23,8 +23,7 @@ type ProfileInputTipe = {
 
 const Profile = ({isDarkMode}: ThemeType) => {
   const {data} = useQuery<UserMeResponse>(USER_ME);
-  const [userEditProfile, {data: result, error: err}] =
-    useMutation<EditProfileResponse>(USER_EDIT_PROFILE);
+  const [userEditProfile] = useMutation<EditProfileResponse>(USER_EDIT_PROFILE);
 
   const navigation = useNavigation<any>();
   const [date, setDate] = useState<any>(new Date());
@@ -75,8 +74,6 @@ const Profile = ({isDarkMode}: ThemeType) => {
         }`,
       },
     });
-    console.log('res', result);
-    console.log('err', err);
   };
 
   return (

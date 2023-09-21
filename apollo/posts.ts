@@ -38,6 +38,82 @@ export const POSTS = gql`
     }
   }
 `;
+export const FAVOURITE_POSTS = gql`
+  query favouritePosts($afterCursor: String, $limit: Int = 20) {
+    favouritePosts(input: {afterCursor: $afterCursor, limit: $limit}) {
+      data {
+        author {
+          avatarUrl
+          birthDate
+          country
+          createdAt
+          deletedAt
+          email
+          firstName
+          gender
+          id
+          lastName
+          middleName
+          phone
+          updatedAt
+        }
+        authorId
+        createdAt
+        deletedAt
+        description
+        id
+        isLiked
+        likesCount
+        mediaUrl
+        title
+        updatedAt
+      }
+      pageInfo {
+        afterCursor
+        count
+        perPage
+      }
+    }
+  }
+`;
+export const MY_POSTS = gql`
+  query myPosts($afterCursor: String, $limit: Int = 20) {
+    myPosts(input: {afterCursor: $afterCursor, limit: $limit}) {
+      data {
+        author {
+          avatarUrl
+          birthDate
+          country
+          createdAt
+          deletedAt
+          email
+          firstName
+          gender
+          id
+          lastName
+          middleName
+          phone
+          updatedAt
+        }
+        authorId
+        createdAt
+        deletedAt
+        description
+        id
+        isLiked
+        likesCount
+        mediaUrl
+        title
+        updatedAt
+      }
+      pageInfo {
+        afterCursor
+        count
+        perPage
+      }
+    }
+  }
+`;
 
 export const POST = gql`
   query post($id: String!) {

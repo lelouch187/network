@@ -21,8 +21,12 @@ const Main = ({isDarkMode, setIsDarkMode}: MainPropsType) => {
 
   return (
     <Root onTouchStart={() => setVisiblePopup(false)} isDarkMode={isDarkMode}>
-      <MainHeader setVisiblePopup={setVisiblePopup} isDarkMode={isDarkMode} />
-      <MainPosts isDarkMode={isDarkMode} />
+      <MainHeader
+        activeTab={activeTab}
+        setVisiblePopup={setVisiblePopup}
+        isDarkMode={isDarkMode}
+      />
+      <MainPosts activeTab={activeTab} isDarkMode={isDarkMode} />
       <BottomMenu
         changeTab={tub => changeTab(tub)}
         activeTab={activeTab}

@@ -77,6 +77,12 @@ export type PostModel = {
 export type FindPostsPaginationResponse = {
   posts: {data: [PostModel]; pageInfo: PageAfterCursorInfo};
 };
+export type FavouritesPostsPaginationResponse = {
+  favouritePosts: {data: [PostModel]; pageInfo: PageAfterCursorInfo};
+};
+export type MyPostsPaginationResponse = {
+  myPosts: {data: [PostModel]; pageInfo: PageAfterCursorInfo};
+};
 
 export type PostResponse = {
   post: {
